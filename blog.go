@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"bufio"
 	"bytes"
 	"regexp"
@@ -136,10 +137,19 @@ func initTemplates() {
 	if err != nil { panic(err) }
 }
 
+func copyStaticFiles() {
+	exec.Command("mkdir", "output").Run()
+	exec.Command("cp", "templates/styles.css", "output").Run()
+	exec.Command("cp", "templates/404.html", "output").Run()
+}
+
 func main() {
+	copyStaticFiles()
+
 	initTemplates()
 
 	parseAllFiles()
 
 	MakeIndex()
+
 }
