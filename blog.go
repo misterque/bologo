@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"text/template"
+	"errors"
 )
 
 type Page struct {
@@ -40,7 +41,7 @@ func loadPage(filename string) (*Page, error) {
 	}
 	p := Page{Title: filename, Body: body}
 
-	r, err := regexp.Compile(`(\d+)_(\d+)_(\d+)_(.*)\.txt`)
+	r, err := regexp.Compile(`/(\d+)_(\d+)_(\d+)_(.*)\.txt`)
 	if err != nil {
 		fmt.Println("Problem with the loadPage regexp")
 		os.Exit(1)
@@ -54,7 +55,7 @@ func loadPage(filename string) (*Page, error) {
 		p.Title = res[4]
 	} else {
 		fmt.Println("Entry does not match format:"+filename)
-		os.Exit(1)
+		return nil, errors.New("Couldn't load Page")
 	}
 	return &p, nil
 }
@@ -103,10 +104,10 @@ func parseAllFiles() error {
 		page, err := loadPage(dirname+"/"+fi.Name())
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(1)
+		} else {
+			page.parseAndSave()
+			Pages = append(Pages, *page)
 		}
-		page.parseAndSave()
-		Pages = append(Pages, *page)
 	}
 	return nil
 }
