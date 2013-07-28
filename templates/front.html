@@ -3,7 +3,16 @@
 </header>
 
 <body>
-{{range $page := .}}
-<a href = "{{$page.Outfilename}}">{{$page.Index}}. {{$page.Title}}</a></br>
-{{end}}
+<div class="maintext">
+  <h1>bologo blog &#10040;</h1>
+  <h3>basic blogging</h3>
+  {{printf "%s" .Head.BodyParsed}}
+  {{range $index, $page := .Tail}}
+    <a href = "{{$page.Outfilename}}">{{$page.Index}}. {{$page.Title}}</a></br>
+  {{end}}
+</div>
+  <div class="footer">
+     <a href="index.html">This page</a>
+     <a href="about.html">About</a>
+   </div>
 </body>

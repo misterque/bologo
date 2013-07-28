@@ -130,9 +130,15 @@ func makeIndex() {
 		buff.WriteString(" "+p.Title+"</a><br/>")
 	}
 
+	type Test struct {
+		Head Page
+		Tail []Page
+	}
 //	p := buff.Bytes()
+
+	params := Test{Pages[0],Pages[1:]}
 	fw := bufio.NewWriter(fo)
-	err = FrontTemplate.Execute(fw, Pages)
+	err = FrontTemplate.Execute(fw, params)
 	if err != nil {
 		panic(err)
 	}
