@@ -6,15 +6,12 @@
 <div class="maintext">
   <h1>bologo blog &#10040;</h1>
   <h3>basic blogging</h3>
-  {{printf "%s" .Head.BodyParsed}}
-  <hr/>
-	Older posts:</br>
-  {{range $index, $page := .Tail}}
-    <a href = "{{$page.Outfilename}}">{{$page.Index}}. {{$page.Title}}</a></br>
-  {{end}}
+This a blog about something based
+on the bologo minimalist blogging engine.
+bologo is written in golang.
   <hr/>
   <div class="footer">
-     <a href="index.html">This page</a>
+     <a href="index.html">Back to Index</a>
      <a href="about.html">About</a>
    </div>
 </div>

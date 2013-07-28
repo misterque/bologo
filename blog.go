@@ -168,6 +168,7 @@ func copyStaticFiles() {
 	exec.Command("cp", "templates/styles.css", "output").Run()
 	exec.Command("cp", "templates/404.html", "output").Run()
 	exec.Command("cp", "templates/not_found.html", "output").Run()
+	exec.Command("cp", "templates/about.html", "output").Run()
 }
 
 func main() {
