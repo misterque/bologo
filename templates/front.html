@@ -1,0 +1,9 @@
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<header>
+</header>
+
+<body>
+{{range $page := .}}
+<a href = "{{$page.Outfilename}}">{{$page.Index}}. {{$page.Title}}</a></br>
+{{end}}
+</body>

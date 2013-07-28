@@ -28,6 +28,7 @@ type Page struct {
 var Pages []Page
 
 var BlogTemplate *template.Template
+var FrontTemplate *template.Template
 
 func (p *Page) save() error {
 	filename := p.Title + ".txt"
@@ -41,7 +42,7 @@ func loadPage(filename string) (*Page, error) {
 	}
 	p := Page{Title: filename, Body: body}
 
-	r, err := regexp.Compile(`/(\d+)_(\d+)_(\d+)_(.*)\.txt`)
+	r, err := regexp.Compile(`/(\d+)_(.*)\.txt`)
 	if err != nil {
 		fmt.Println("Problem with the loadPage regexp")
 		os.Exit(1)
@@ -49,10 +50,11 @@ func loadPage(filename string) (*Page, error) {
 	res := r.FindStringSubmatch(filename)
 
 	if res != nil {
-		p.Year, _ = strconv.Atoi(res[1])
-		p.Month, _ = strconv.Atoi(res[2])
-		p.Day, _ = strconv.Atoi(res[3])
-		p.Title = res[4]
+		p.Year = 0 //strconv.Atoi(res[1])
+		p.Month = 0 //strconv.Atoi(res[2])
+		p.Day = 0 //strconv.Atoi(res[3])
+		p.Index, _ = strconv.Atoi(res[1])
+		p.Title = res[2]
 	} else {
 		fmt.Println("Entry does not match format:"+filename)
 		return nil, errors.New("Couldn't load Page")
@@ -112,30 +114,47 @@ func parseAllFiles() error {
 	return nil
 }
 
-func MakeIndex() {
+func makeIndex() {
 	fo, err := os.Create("output/index.html")
 
 	if err != nil {
 		fmt.Println("Cannot write index.html")
 		os.Exit(1)
 	}
+
+	var b []byte
+	buff := bytes.NewBuffer(b)
 	for _,p := range Pages {
-		fo.WriteString("<a href=\""+p.Outfilename+"\" >")
-		fo.WriteString(strconv.Itoa(p.Day)+"."+strconv.Itoa(p.Month)+"."+strconv.Itoa(p.Year) )
-		fo.WriteString(" "+p.Title+"</a><br/>")
+		buff.WriteString("<a href=\""+p.Outfilename+"\" >")
+		buff.WriteString(strconv.Itoa(p.Index) )
+		buff.WriteString(" "+p.Title+"</a><br/>")
 	}
+
+//	p := buff.Bytes()
+	fw := bufio.NewWriter(fo)
+	err = FrontTemplate.Execute(fw, Pages)
+	if err != nil {
+		panic(err)
+	}
+	fw.Flush()
 	fo.Close()
 }
 
-func initTemplates() {
-	f, err := ioutil.ReadFile("templates/blogentry.html") 
+func initTemplate(filename string) *template.Template {
+	f, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	 }
 
-	BlogTemplate, err = template.New("blogentry").Parse(string(f))
+	template, err := template.New(filename).Parse(string(f))
 	if err != nil { panic(err) }
+	return template
+}
+
+func initTemplates() {
+	BlogTemplate = initTemplate("templates/blogentry.html")
+	FrontTemplate = initTemplate("templates/front.html")
 }
 
 func copyStaticFiles() {
@@ -152,6 +171,6 @@ func main() {
 
 	parseAllFiles()
 
-	MakeIndex()
+	makeIndex()
 
 }
